@@ -171,7 +171,69 @@ To send the units, execute the following command
 
 On the first terminal type 
 
-./multichain-cli sendasset <second_server_wallet_address> asset1 100
+./multichain-cli chain1 sendasset <second_server_wallet_address> asset1 100
 
 ADDING PERMISSIONS 
+
+Beforehand, you probably observed a blunder that the address does not have get
+authorizations. So it's a great opportunity to include get and send authorizations
+To allow authorizations to the address, execute the accompanying order
+
+If the above command does not goes well, then first grant required permissions to the second server. 
+
+On the first terminal type, 
+
+./multichain-cli chain1 grant <second_server_wallet_address> receive, send 
+
+Above command will grant permission to the address to receive or send the asset
+
+Then you can retry the above command again which was 
+./multichain-cli chain1 sendasset <second_server_wallet_address> asset1 100 
+
+CHECKING ASSET BALANCES 
+Now check the asset balances on each server, including transactions with zero confirmations.
+They should be 900 and 100 respectively
+To check asset balances, execute the following command:
+
+./multichain-cli chain1 gettotalbalances 0 
+
+VIEW TRANSACTIONS 
+
+You can likewise see the transaction on every node and perceive how it influenced their
+equalizations
+To view the transaction, execute the following command on each node
+
+./multichain-cli chain1 listwallettransactions 1 
+
+TRANSACTION METADATA  
+To create a transaction with some metadata on first server execute the following 
+command 
+
+On the first server terminal 
+
+./multichain-cli chain1 sendwithdata <second_server_wallet_address> '{"asset1":125}' <any_meta_data_of_your_choice>
+
+e.g for metadata 
+48692066726f6d204d756c7469436861696e21
+This is just metadata and it can be anything of your choice 
+
+Examining the transactions 
+
+Now the previous transaction can be examined on the second 
+server terminal
+To examine the transaction, execute the following command 
+on the second server terminal 
+
+./multichain-cli chain1 getwallettransaction <transaction_id>
+
+In the balance field you can see the
+incoming 125 units of asset1 and the data
+field containing the hexadecimal metadata
+that was added
+
+
+
+
+
+
 
