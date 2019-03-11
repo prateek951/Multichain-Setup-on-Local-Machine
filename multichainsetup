@@ -1,0 +1,177 @@
+Setting up MultiChain 
+
+First install multichain for Windows 
+
+Working with two shells(Local Servers 1 and 2)
+
+FOR PRODUCTION BLOCKCHAINS WE WILL NEED TWO DIFFERENT SERVERS 
+(MEANING TWO DIFFERENT COMPUTERS)
+
+CREATING A BLOCKCHAIN  
+
+1. First we will create a new blockchain named 
+chain1.On the first server, run this command 
+
+./multichain-util create chain1 
+
+2. Initialize the blockchain, including 
+creating the genesis block 
+
+./multichaind chain1 -daemon 
+
+You should be told that the server has started and then after 
+a few seconds, that the genesis block was found.You should
+also be given the node address that others can use to connect
+to this blockchain 
+
+CONNECTING TO A BLOCKCHAIN 
+Now we will connect to this blockchain from elsewhere.On 
+the second server (if working locally then you need to setup 
+the data directory since in the same directory you cannot connect 
+to the multichain on same server) 
+
+In the multichain-windows directory 
+create a data directory (any name ) say multichain-other 
+
+mkdir multichain-other 
+
+We need to connect using this command to the node address 
+that we got 
+
+IMPORTANT TO SEE (LOCAL SETUP)
+
+./multichaind -datadir=multichain-other -port=10255 -rpcport=10254 chain1@<node_address_goes_here>
+
+You will see the usual message about needing connect permission 
+so assign these via the regular node 
+
+You may see an error cannot connect to the server but this is due to the fact that the daemon api 
+is not running and you need to start it using the command  
+
+In a new terminal (3rd terminal)
+
+./multichaind chain1 -daemon 
+
+MULTICHAIN TEAM ANSWER 
+It sounds like the multichaind daemon is no longer running, since this is a message given by 
+multichain-cli when it does receive a response from the daemon's API. In Windows you need to run 
+the daemon and the command-line in two separate windows, since the daemon can't run in the background.
+
+And then you can grant permissions from regular node to other nodes that are trying to connect to the blockchain 
+using this command in the regular terminal(1st server/1st terminal)
+
+Granting connect, receive and send permissions to the 2nd node (2nd server terminal - local in our case)
+
+This command is to be run in the first server since it is the regular one that will grant permissions 
+to all other nodes that are trying to connect to it. 
+
+./multichain-cli chain1 grant <wallet_address_goes_here> connect, send, receive 
+
+Now you can start up the second node again 
+
+./multichaind -datadir=multichain-other -port=10255 -rpcport=10254 chaintest -daemon
+
+You can send commands to the second node as follows 
+This command is to be run from the regular terminal (1st server 
+terminal)
+
+./multichain-cli -datadir=multichain-other -rpcport=10254 chaintest
+
+
+MULTICHAIN IN INTERACTIVE MODE 
+
+On both the servers (terminals here we are working locally)
+
+./multichain-cli chain1 
+
+Now that the blockchain is working on two nodes you can run the commands in this section 
+on either or both. To get the general information 
+
+getinfo
+
+See a list of all available commands:
+
+help
+
+Show all permissions currently assigned:
+
+listpermissions
+
+Create a new address in the wallet:
+
+getnewaddress
+
+List all addresses in the wallet:
+
+getaddresses
+
+Get the parameters of this blockchain (based on params.dat file):
+
+getblockchainparams
+
+For each node, get a list of connected peers:
+
+getpeerinfo
+
+NATIVE ASSETS 
+
+Now we are going to create a new asset and send it between nodes 
+On the first server, get the address that has the permission 
+to create assets (FIRST TERMINAL)
+
+./multichain-cli chain1 listpermissions issue 
+
+Above command will list the address that has the permission to create 
+the assets 
+(This will tell us which node has permission to CREATE AN ASSET 
+and for this node we will be making use of its node address 
+to create a new asset
+Gives us the <node_address_which_has_permissions_to_create>)
+
+CREATING A NEW ASSET 
+
+Now we’ll create a new asset on this node with 1000 units, each of which can be subdivided
+into 100 parts, sending it to itself
+To create a new asset execute the following:
+
+On the first terminal  
+
+./multichain-cli chain1 issue <node_address_which_has_permissions_to_create> asset1 1000 0.01
+
+Above command will issue asset1 to the specified address
+
+VERIFYING THE ASSET 
+
+On both the servers verify that the asset named asset1 
+is listed: 
+
+listassets 
+
+The asset can be seen in both the servers (
+    running the command on both the terminals 
+    ./multichain-cli chain1 listassets
+)
+
+
+CHECKING ASSET BALANCES 
+Now check the asset balances on each server.The first should 
+show a balance of 1000  and the second should show no assets at 
+all 
+
+For this run the command on both the server terminals 
+
+./multichain-cli chain1 gettotalbalances 
+
+
+SENDING THE ASSET  
+
+On the first server, now try sending 100 units of the asset 
+to the second server's wallet 
+To send the units, execute the following command 
+
+On the first terminal type 
+
+./multichain-cli sendasset <second_server_wallet_address> asset1 100
+
+ADDING PERMISSIONS 
+
