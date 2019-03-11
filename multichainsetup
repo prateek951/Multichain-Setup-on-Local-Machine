@@ -1,5 +1,14 @@
 Setting up MultiChain 
 
+THINGS TO KEEP IN MIND WHILE FOLLOWING THE STEPS DOWN BELOW 
+
+1. You should be able to clearly distinguish between the terminals 
+that you run. Please follow the steps down below to setup multichain 
+on the local computer 
+2. This is taken entirely from the multichain documentation and 
+I have adapted it according to my usecase by setting it on my local 
+computer 
+
 First install multichain for Windows 
 
 Working with two shells(Local Servers 1 and 2)
@@ -231,9 +240,94 @@ incoming 125 units of asset1 and the data
 field containing the hexadecimal metadata
 that was added
 
+                    STREAMS 
 
+Examining the transaction 
 
+To create stream execute the following command in the first 
+server terminal 
 
+./multichain-cli chain1 stream1 false 
 
+This false means that the stream can only be written by those with explicit specific permissions 
 
+PERMISSIONS OF THE STREAM 
+Let us see the permissions of the stream
+To see the permissions, execute the following command 
 
+./multichain-cli chain1 stream1.*
+
+So far now only first server has the ability to write to the stream, as well as administrate it
+
+PUBLISHING TO THE STREAM 
+Let us publish something to the stream using the key 
+To publish to the stream with the key execute the following command 
+on the first server terminal 
+
+./multichain-cli chain1 publish stream1 key1 312312412412312321213
+
+(312312412412312321213) This is just a random data. It can be
+anything of your choice
+
+CHECKING THE VISIBILITY OF THE SECOND SERVER 
+
+Let us see that the stream is visible on another node or not 
+On the second server execute the following command  
+
+./multichain-cli chain1 liststreams 
+
+Here the root stream was in the system by default 
+
+SUBSCRIBING TO THE STREAM BY THE SECOND SERVER 
+Now we want the second server to subscribe to the stream, then view its content 
+To subscribe to the stream and view the content, execute the following command 
+
+On the second server terminal 
+
+./multichain-cli chain1 subscribe stream1 
+
+Then to list the stream items of the stream1 
+
+./multichain-cli chain1 liststreamitems stream1 
+
+ALLOWING SECOND SERVER TO PUBLISH TO THE STREAM 
+
+Now we want the second server to be allowed to publish to the stream
+To publish to a stream, first we have to provide permission to the address, execute the
+following on the first server:
+
+./multichain-cli chain1 grant <second_server_wallet_address> receive,send
+./multichain-cli chain1 grant <second_server_wallet_address> stream1.write
+
+PUBLISH ITEMS ON THE SECOND SERVER 
+
+Now let’s publish a couple of items on the second server:
+
+./multichain-cli chain1 publish stream1 key1 736f6d65206f746865722064617461
+./multichain-cli chain1 publish stream1 key2 53747265616d732052756c6521
+
+                MINING 
+
+To start the mining process, 
+On the first server terminal run the following commands 
+
+./multichain-cli chain1 grant <second_server_wallet_address> mine
+
+This way we have granted mining permissions to the node 
+
+To check for the addresses that have permissions for mining 
+
+./multichain-cli chain1 listpermissions mine 
+
+SETTING RUNTIME PARAMETERS 
+
+To maximize the degree of miner randomness, execute the following command:
+server: setruntimeparam miningturnover 1
+
+./multichain-cli chain1 setruntimeparam miningturnover 1 
+
+CHECKING THE CURRENT BLOCK HEIGHT 
+
+To check the block height, on either server terminal run the following command 
+
+./multichain-cli chain1 getinfo
